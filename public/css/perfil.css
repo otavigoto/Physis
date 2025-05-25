@@ -5,6 +5,17 @@
     --yellow-color: #f2b946;
     --offwhite-color: #f9f2e0;
 }
+
+input[type="date"]::-webkit-inner-spin-button, /* PRA TIRAR O SIMBOLO DO CALENDARIO E O USUARIO DIGITAR*/
+input[type="date"]::-webkit-calendar-picker-indicator {    
+display: none;
+-webkit-appearance: none; } 
+input::-webkit-outer-spin-button,  /* PRA TIRAR AS SETAS DO INPUT DE NUMERO*/
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0; 
+}
+
 .login-section{
     height: 70vh;
     display:flex;

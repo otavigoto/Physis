@@ -61,8 +61,8 @@
         <div class="input-grid">
           <h1>Gestão de residuos</h1>
           <p>Insira a quantidade de lixo produzido por você:</p>
-          <input class="darkgreen-bg" type="text" id="kg-reciclavel" name="reciclavel" placeholder="reciclavel/kg">
-          <input class="darkgreen-bg" type="text" id="kg-organico" name="organico" placeholder="organico/kg"> 
+          <input class="darkgreen-bg" type="number" id="kg-reciclavel" name="reciclavel" placeholder="reciclavel/kg" min="1" required>
+          <input class="darkgreen-bg" type="number" id="kg-organico" name="organico" placeholder="organico/kg" min="1" required> 
         </div>
       </div>
       <div class="yellow-bg">
@@ -70,7 +70,7 @@
         <div class="input-grid">
           <h1>Meios de Transporte</h1>
           <p>Insira o tipo de transporte e a distância percorrida em km:</p>
-          <select class="darkgreen-bg" id="transporte-select" name="transporte">
+          <select class="darkgreen-bg" id="transporte-select" name="transporte" required>
             <option disabled>Tipo de transporte</option>
             <option value="3">Bicicleta, transporte público ou elétrico</option>
             <option value="2">Uso misto de transporte publico e privado</option>
@@ -83,7 +83,7 @@
         <div class="input-grid">
           <h1>Consumo de Água</h1>
           <p>Insira a medição do seu hidrômetro:</p>
-          <input class="darkgreen-bg" type="number" id="hidrometro" name="agua" placeholder="medição do hidrômetro">
+          <input class="darkgreen-bg" type="number" id="hidrometro" name="agua" placeholder="medição do hidrômetro" min="1" required>
         </div>
       </div>
       <div class="yellow-bg">
@@ -91,7 +91,7 @@
         <div class="input-grid">
           <h1>Consumo de Energia</h1>
           <p>Insira a medição do seu relógio de energia:</p>
-          <input class="darkgreen-bg" type="number" id="energia" name="energia" placeholder="medição do relógio">
+          <input class="darkgreen-bg" type="number" id="energia" name="energia" placeholder="medição do relógio" min="1" required>
         </div>
       </div>
     </form>

@@ -8,7 +8,7 @@
             <label class="topo">Nome Completo</label>
             <input type="text" id="fullname" name="nome" class="nome-completo" value="<%= usuario.nome%>">
             <label>Data de Nascimento</label>
-            <input type="text" id="bith-date" name="data" class="data-de-nacimento" value="<%= usuario.data_nascimento.split('T')[0].split('-').reverse().join('/') %>">
+            <input type="date" id="bith-date" name="data" class="data-de-nacimento" value="<%= usuario.data_nascimento.split('T')[0]%>">
             <label>CPF</label>
             <input type="text" id="user-CPF" name="cpf" class="cpf-usuario" value="<%= usuario.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')%>" disabled>
             <label>Senha</label>

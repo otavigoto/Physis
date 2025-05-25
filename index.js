@@ -58,6 +58,11 @@ function validarEmail(email) {
     return regex.test(email);
 }
 
+function validarSenha(senha) {
+    const regex = /^[a-zA-Z]{6,}$/;
+    return regex.test(senha);
+}
+
 function formatarDataParaMySQL(data) {
     // Divide a data no formato DD/MM/AAAA
     const [dia, mes, ano] = data.split('/');
@@ -114,10 +119,14 @@ function codificarTexto(texto) {
         pares.push(par.length === 2 ? par : par + 'Z');
     }
 
+    console.log(pares);
+
     const numeros = pares.map(par => {  // Transformar os pares em números
         const [primeira, segunda] = par.split('');
         return [numerico[primeira.toLowerCase()], numerico[segunda.toLowerCase()]];
     });
+
+    console.log(numeros);
 
     const resultado = numeros.map(par => { // Multiplicação da matriz de codificação
         const [x, y] = par;
@@ -127,6 +136,8 @@ function codificarTexto(texto) {
         ];
     });
 
+    console.log(resultado);
+
     const numericoInvertido = Object.fromEntries(Object.entries(numerico).map(([letra, numero]) => [numero, letra]));  //tabela do modulo 26 invertida
 
     const textoCodificado = resultado.map(par => {  //Codifica o texto
@@ -134,6 +145,7 @@ function codificarTexto(texto) {
     }).join('');
 
     console.log(textoCodificado);
+    console.log(decodificarTexto(textoCodificado));
     return textoCodificado;
 
 }
@@ -210,6 +222,11 @@ app.post('/login', (req, res) => {
     let email = req.body.email; // Pegando o email do formulário
     let senha = req.body.senha; // Pegando a senha do formulário
 
+    if (!validarSenha(senha)) {
+    req.session.msg = 'A senha deve conter apenas letras (a-z, A-Z)';
+    return res.redirect('/login');
+    }
+
     let senha_codificada = codificarTexto(senha);
 
     // Consulta ao banco de dados para verificar o email e senha
@@ -226,7 +243,7 @@ app.post('/login', (req, res) => {
                 cpf: resultados[0].cpf,
                 nome: resultados[0].nome,
                 email: resultados[0].email,
-                senha: resultados[0].senha,
+                senha: senha,
                 data_nascimento: resultados[0].data_nascimento,
             };
             res.redirect('/home'); // Redireciona para a página inicial após o login
@@ -269,9 +286,9 @@ app.post('/cadastro', (req, res) => {
         return res.redirect('/cadastro'); // Redireciona para a página de cadastro
     }
 
-    if (senha.length < 6) {
-        req.session.msg = 'A senha deve ter pelo menos 6 caracteres!'; // Mensagem de erro
-        return res.redirect('/cadastro'); // Redireciona para a página de cadastro
+    if (!validarSenha(senha)) {
+    req.session.msg = 'A senha deve conter apenas letras (a-z, A-Z) e ter pelo menos 6 caracteres!';
+    return res.redirect('/cadastro');
     }
 
     if (cpf.length !== 11) {
@@ -677,15 +694,17 @@ app.post('/perfil/editar', verificarLogin, (req, res) => {
     if (!nome || !data || !email || !senha) {
         req.session.msg = 'Preencha todos os campos!';
         return res.redirect('/perfil');
-    }
+    };
 
-    if (!validarFormatoData(data)) {
-        req.session.msg = 'Data inválida! Use o formato DD/MM/AAAA ou DDMMAAAA.';
+    if (!validarEmail(email)) {
+        req.session.msg = 'Email inválido!';
         return res.redirect('/perfil');
-    }
+    };
 
-    // Converte a data para o formato AAAA-MM-DD
-    const dataFormatada = formatarDataParaMySQL(data);
+    if (!validarSenha(senha)) {
+    req.session.msg = 'A senha deve conter apenas letras (a-z, A-Z) e ter pelo menos 6 caracteres!';
+    return res.redirect('/perfil');
+    };
 
     const query = `
         UPDATE usuario 
@@ -695,7 +714,7 @@ app.post('/perfil/editar', verificarLogin, (req, res) => {
 
     let senha_codificada = codificarTexto(senha);
 
-    db.query(query, [nome, dataFormatada, email, senha_codificada, cpf], (erro, resultados) => {
+    db.query(query, [nome, data, email, senha_codificada, cpf], (erro, resultados) => {
         if (erro) {
             console.log('Erro ao atualizar os dados do usuário: ' + erro);
             return res.status(500).send('Erro ao atualizar os dados do perfil');
@@ -703,7 +722,7 @@ app.post('/perfil/editar', verificarLogin, (req, res) => {
 
         // Atualiza os dados na sessão
         req.session.usuario.nome = nome;
-        req.session.usuario.data_nascimento = dataFormatada;
+        req.session.usuario.data_nascimento = data;
         req.session.usuario.email = email;
         req.session.usuario.senha = senha;
 
