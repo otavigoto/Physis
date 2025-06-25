@@ -31,9 +31,6 @@ db.connect((erro) => { // Conectando ao banco de dados
     }
 });
 
-
-
-
 //Funções
 
 
@@ -99,6 +96,40 @@ function validarFormatoData(data) {
     );
 }
 
+function calcularInversa2x2(matriz) {
+    let det = (matriz[0][0] * matriz[1][1]) - (matriz[0][1] * matriz[1][0]);
+    det = ((det % 26) + 26) % 26; // Garante determinante positivo módulo 26
+
+    let detInversa = null;
+    for (let i = 1; i < 26; i++) {
+        if ((det * i) % 26 === 1) {
+            detInversa = i;
+            break;
+        }
+    }
+
+    if (detInversa === null) {
+        console.log("Não possui inversa :(");
+        return null;
+    }
+
+    // Criar cópia da matriz para evitar modificar a original
+    let inversa = [
+        [matriz[1][1], -matriz[0][1]],
+        [-matriz[1][0], matriz[0][0]]
+    ];
+
+    // Aplicar inverso do determinante e módulo 26 a cada elemento
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+            inversa[i][j] = ((inversa[i][j] * detInversa) % 26 + 26) % 26;
+        }
+    }
+
+    return inversa;
+}
+
+
 function codificarTexto(texto) {
     const matriz = [  //Matriz de codificação
         [4, 3],
@@ -115,8 +146,8 @@ function codificarTexto(texto) {
     for (let i = 0; i < texto.length; i += 2) {
         // Pega duas letras por vez
         const par = texto.slice(i, i + 2);
-        // Se o par tiver apenas uma letra, adiciona 'Z'
-        pares.push(par.length === 2 ? par : par + 'Z');
+        // Se o par tiver apenas uma letra, repete a ultima letra
+        pares.push(par.length === 2 ? par : par + par);
     }
 
     console.log(pares);
@@ -146,14 +177,15 @@ function codificarTexto(texto) {
 
     console.log(textoCodificado);
     console.log(decodificarTexto(textoCodificado));
+    console.log(calcularInversa2x2(matriz));
     return textoCodificado;
 
 }
 
 function decodificarTexto(texto) {
-    const matriz = [  //Matriz Inversa
-        [42, -63],
-        [-21, 84]
+    const matriz = [ 
+        [16, 15],
+        [5, 6]
     ];
 
     const numerico = {  //Modulo 26, letra para numero
@@ -165,7 +197,7 @@ function decodificarTexto(texto) {
     const pares = [];   // Array para armazenar os pares de duas letras
     for (let i = 0; i < texto.length; i += 2) {
         const par = texto.slice(i, i + 2);
-        pares.push(par.length === 2 ? par : par + 'Z'); // Adiciona 'Z' se o par tiver apenas uma letra
+        pares.push(par.length === 2 ? par : par + par); // Adiciona 'Z' se o par tiver apenas uma letra
     }
 
     const numeros = pares.map(par => { // Transformar os pares em números
@@ -189,8 +221,6 @@ function decodificarTexto(texto) {
     const textoDecodificado = resultadoModulo.map(par => {  //Decodifica o texto
         return par.map(numero => numericoInvertido[numero]).join('');
     }).join('');
-
-    console.log(textoDecodificado);
     return textoDecodificado;
 
 };
@@ -321,12 +351,6 @@ app.post('/cadastro', (req, res) => {
 app.get('/home', verificarLogin, (req, res) => {
     const msg = req.session.msg || '';
     req.session.msg = null; 
-
-
-    const queryGraficoSoares = `
-    SELECT
-    
-    `
 
     const queryBuscaIndices = `
     SELECT
